@@ -1,0 +1,2 @@
+This is just a placeholder document to maintain file structure on GitHub. 
+Please delete once the project has been cloned. 
