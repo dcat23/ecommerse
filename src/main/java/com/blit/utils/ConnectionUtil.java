@@ -5,9 +5,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConnectionUtil {
+
     private static Connection conn;
 
-    public static Connection getConnection() throws SQLException {
+    public static Connection getConnection(String databaseUrl) throws SQLException {
         if (conn != null && !conn.isClosed()) {
             return conn;
         } else {
@@ -19,7 +20,7 @@ public class ConnectionUtil {
 
             // update once connecting to live databasse
 //            String url = "demos-database.cdomywmkyglo.us-east-1.rds.amazonaws.com:3306";
-            final String url = "jdbc:mysql://localhost:3308/bootcamp";
+            final String url = databaseUrl;
             final String username = "admin";
             final String password = "password";
 
@@ -27,5 +28,10 @@ public class ConnectionUtil {
         }
 
         return conn;
+    }
+
+    public static Connection getConnection() throws SQLException {
+        final String DATABASE_URL = "jdbc:mysql://localhost:3308/bootcamp";
+        return getConnection(DATABASE_URL);
     }
 }

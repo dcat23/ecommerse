@@ -11,7 +11,7 @@ public class UserRepo {
     public static User byEmail(String email) {
         try(Connection conn = ConnectionUtil.getConnection())
         {
-            String sql = "SELECT * FROM users WHERE email=" + email +";";
+            String sql = "SELECT * FROM users WHERE email = '" + email +"';";
             Statement statement = conn.createStatement();
             ResultSet result = statement.executeQuery(sql);
             if (result.next())
@@ -67,8 +67,8 @@ public class UserRepo {
         {
             String sql = "INSERT INTO users (user_type,name,email,password)"
                 + " VALUES (?,?,?,?);";
-
             PreparedStatement statement = conn.prepareStatement(sql);
+
             int count = 0;
             statement.setString(++count, newUser.userType());
             statement.setString(++count, newUser.name());
@@ -76,6 +76,7 @@ public class UserRepo {
             statement.setString(++count, encode(newUser.password()));
 
             statement.execute();
+
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
