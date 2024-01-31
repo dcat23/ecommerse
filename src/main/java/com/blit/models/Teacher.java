@@ -3,9 +3,10 @@ package com.blit.models;
 public class Teacher extends User {
 
     public Teacher() {
+        super(Type.TEACHER);
     }
 
-    public Teacher (String name, String email, String password) {
-        super(Type.TEACHER, name, email, password);
+    public Teacher (String name, String email) {
+        super(Type.TEACHER, name, email);
     }
 }

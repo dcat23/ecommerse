@@ -3,30 +3,36 @@ package com.blit.models;
 public abstract class User {
 
     public enum Type {TEACHER, STUDENT, GUEST}
-
     private final Type type;
+    private int id;
     private String name;
     private String email;
 
-    private String password;
-
     public User() {
         this.type = Type.GUEST;
-        this.name = "guest";
+        this.name = "Guest";
+    }
+    public User(Type type) {
+        this.type = type;
     }
 
-
-    public User(Type type, String name, String email, String password) {
+    public User(Type type, String name, String email) {
         this.type = type;
         this.name = name;
         this.email = email;
-        this.password = password;
     }
 
     public Type getType() {
         return type;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -44,5 +50,5 @@ public abstract class User {
         this.email = email;
     }
 
-    public boolean loggedIn() { return type != Type.GUEST; }
+    public boolean exists() { return type != Type.GUEST; }
 }

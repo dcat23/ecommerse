@@ -1,8 +1,10 @@
 package com.blit.daos;
 
 import com.blit.exceptions.EmailExistsException;
-import com.blit.models.Guest;
-import com.blit.models.User;
+import com.blit.models.*;
+import com.blit.repositories.UserRepo;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BootcampDAOImpl implements BootcampDAO {
 
@@ -12,29 +14,30 @@ public class BootcampDAOImpl implements BootcampDAO {
         this.user = new Guest();
     }
 
-    public User getUserByEmail(String email) {
-
-        return null;
-    }
     @Override
-    public boolean register(User newUser) throws EmailExistsException {
+    public boolean register(NewUser newUser) throws EmailExistsException {
 
-        if (getUserByEmail(newUser.getEmail()) != null)
+        if (UserRepo.byEmail(newUser.email()).exists())
         {
-            throw new EmailExistsException(newUser.getEmail() + " already exists");
+            throw new EmailExistsException(newUser.email() + " already exists");
         }
 
-        this.user = newUser;
+
+
+        User.Type type = User.Type.valueOf(newUser.userType());
+
+        UserRepo.insert(newUser);
+
 
         return true;
     }
 
     @Override
-    public boolean authenticate(String username, String encryptedPassword)
+    public boolean authenticate(String email, String password)
     {
 //        exceptions : UserNotFound, InvalidCredentials
 
-        System.out.println("encrypted password: " + encryptedPassword);
+        System.out.println("encrypted password: " + password);
 
         return false;
     }
@@ -42,6 +45,27 @@ public class BootcampDAOImpl implements BootcampDAO {
     @Override
     public User getUser() {
         return user;
+    }
+
+    @Override
+    public List<Course> getCourses() {
+
+        List<Course> courses = new ArrayList<>();
+
+
+        return courses;
+    }
+
+    @Override
+    public List<Course> getEnrolledCourses() {
+
+        if (user instanceof Guest) return getCourses();
+
+        List<Course> courses = new ArrayList<>();
+
+
+
+        return courses;
     }
 
 }

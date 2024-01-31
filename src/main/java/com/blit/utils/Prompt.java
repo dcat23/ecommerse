@@ -79,9 +79,9 @@ public class Prompt {
     }
 
     private String validate(String answer) throws InvalidSelectionException {
-        if (options.size() > 0) {
+        if (!options.isEmpty()) {
             int index = Integer.parseInt(answer) - 1;
-            if (index >= options.size() | index < 0)
+            if (index >= options.size() || index < 0)
             {
                 throw new InvalidSelectionException("Selected option " + answer +
                         " must be between 1 and " + options.size());
@@ -94,7 +94,9 @@ public class Prompt {
     }
 
     public String getAnswer() {
-        if (answer == null) throw new RuntimeException("answer not provided");
+        if (answer == null) {
+            throw new RuntimeException("answer not provided");
+        }
 
         return switch (casing) {
             case LOWER -> answer.toLowerCase();
@@ -104,7 +106,12 @@ public class Prompt {
     }
 
 
-    public int toInteger() {
-        return Integer.parseInt(answer);
+    public int getSelection() {
+        if (options.isEmpty())
+        {
+            return Integer.parseInt(answer);
+        }
+
+        return options.indexOf(answer);
     }
 }
