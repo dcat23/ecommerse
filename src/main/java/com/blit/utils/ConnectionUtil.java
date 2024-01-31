@@ -19,7 +19,7 @@ public class ConnectionUtil {
 
             // update once connecting to live databasse
 //            String url = "demos-database.cdomywmkyglo.us-east-1.rds.amazonaws.com:3306";
-            final String url = "http://locahost:3308/exchange";
+            final String url = "jdbc:mysql://localhost:3308/bootcamp";
             final String username = "admin";
             final String password = "password";
 

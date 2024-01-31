@@ -10,7 +10,7 @@ services:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_PASSWORD: password
       MYSQL_USER: admin
-      MYSQL_DATABASE: exchange
+      MYSQL_DATABASE: bootcamp
     restart: unless-stopped
 
   adminer:
