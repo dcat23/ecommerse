@@ -3,6 +3,7 @@ package com.blit.controllers;
 import com.blit.daos.BootcampDAO;
 import com.blit.daos.BootcampDAOImpl;
 import com.blit.exceptions.EmailExistsException;
+import com.blit.exceptions.InvalidEmailFormatException;
 import com.blit.models.*;
 import com.blit.utils.Prompt;
 
@@ -114,13 +115,16 @@ public class BootcampController {
                         name.getAnswer(),
                         email.getAnswer(),
                         password.getAnswer()));
-            } catch (EmailExistsException e) {
-                e.printStackTrace();
+            } catch (EmailExistsException | InvalidEmailFormatException e) {
+                System.out.println(e.getMessage());
                 email.prompt(scan);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
             }
-
         }
 
+        System.out.println(email.getAnswer() + " registered as " + userType);
 
     }
     private void studentMenu() {

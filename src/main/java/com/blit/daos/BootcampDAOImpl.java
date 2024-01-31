@@ -1,8 +1,11 @@
 package com.blit.daos;
 
 import com.blit.exceptions.EmailExistsException;
+import com.blit.exceptions.InvalidEmailFormatException;
 import com.blit.models.*;
 import com.blit.repositories.UserRepo;
+import com.blit.utils.Validation;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +18,7 @@ public class BootcampDAOImpl implements BootcampDAO {
     }
 
     @Override
-    public boolean register(NewUser newUser) throws EmailExistsException {
+    public boolean register(NewUser newUser) throws Exception {
 
         if (UserRepo.byEmail(newUser.email()).exists())
         {
@@ -23,8 +26,18 @@ public class BootcampDAOImpl implements BootcampDAO {
         }
 
 
+        if (!Validation.checkEmail(newUser.email()))
+        {
+            throw new InvalidEmailFormatException("Email " + newUser.email() + " should have format: NAME@HOST.COM");
+        }
+
 
         User.Type type = User.Type.valueOf(newUser.userType());
+
+        if (type == null || type == User.Type.GUEST)
+        {
+            throw new Exception("Cannot register as " + type == null ? "none":type.name());
+        }
 
         UserRepo.insert(newUser);
 
@@ -51,8 +64,6 @@ public class BootcampDAOImpl implements BootcampDAO {
     public User getUser() {
         return user;
     }
-
-
 
     @Override
     public List<Course> getCourses() {

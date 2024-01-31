@@ -1,6 +1,5 @@
 package com.blit.daos;
 
-import com.blit.exceptions.EmailExistsException;
 import com.blit.models.Course;
 import com.blit.models.NewUser;
 import com.blit.models.User;
@@ -16,7 +15,7 @@ public interface BootcampDAO {
     /**
      * Creates a new user
      */
-    boolean register(NewUser newUser) throws EmailExistsException;
+    boolean register(NewUser newUser) throws Exception;
 
     /**
      * Checks if the credentials are valid
