@@ -1,6 +1,6 @@
 package com.blit.models;
 
-public class User {
+public abstract class User {
 
     public enum Type {TEACHER, STUDENT, GUEST}
 
@@ -8,15 +8,19 @@ public class User {
     private String name;
     private String email;
 
+    private String password;
+
     public User() {
         this.type = Type.GUEST;
         this.name = "guest";
     }
 
-    public User(Type type, String name, String email) {
+
+    public User(Type type, String name, String email, String password) {
         this.type = type;
         this.name = name;
         this.email = email;
+        this.password = password;
     }
 
     public Type getType() {
