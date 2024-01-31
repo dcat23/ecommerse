@@ -29,4 +29,9 @@ public interface BootcampDAO {
     boolean authenticate(String email, String password);
 
 
+    /**
+     * Sets the current user to Guest;
+     *  effectively logs out
+     */
+    void resetUser();
 }

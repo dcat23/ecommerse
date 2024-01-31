@@ -17,39 +17,57 @@ public class BootcampController {
     private static Scanner scan = new Scanner(System.in);
     private final BootcampDAO bootcampDAO = new BootcampDAOImpl();
 
+    private static boolean RUNNING = false;
+
     public static void main(String[] args) {
 
         BootcampController controller = new BootcampController();
 
         controller.start();
 
-        switch (controller.activeUser().getType()) {
-            case TEACHER -> controller.teacherMenu();
-            case STUDENT -> controller.studentMenu();
-            default -> controller.mainMenu();
+        while(RUNNING) {
+            switch (controller.activeUser().getType()) {
+                case TEACHER -> controller.teacherMenu();
+                case STUDENT -> controller.studentMenu();
+                default -> controller.mainMenu();
+            }
         }
-
     }
 
     private void start() {
-        Prompt start = new Prompt.builder("What would you like to do?")
-                .addOption("Login")
-                .addOption("Register")
-                .build();
-
-        start.prompt(scan);
-
-        switch (start.getAnswer()) {
-            case "Login" -> login();
-            case "Register" -> register();
-            default -> mainMenu();
-        }
-
+        RUNNING = true;
+    }
+    private void exit() {
+        RUNNING = false;
     }
 
-
     private void mainMenu() {
-//        options: login, register, exit
+        final String MENU_TITLE = "What would you like to do?";
+
+        Prompt menu = null;
+        if (activeUser().exists())
+        {
+            menu = new Prompt.builder(MENU_TITLE)
+                    .addOption("Logout")
+                    .addOption("Exit")
+                    .build();
+        } else {
+            menu = new Prompt.builder(MENU_TITLE)
+                    .addOption("Login")
+                    .addOption("Register")
+                    .addOption("Exit")
+                    .build();
+        }
+
+        menu.prompt(scan);
+
+        switch (menu.getAnswer()) {
+            case "Login" -> login();
+            case "Logout" -> logout();
+            case "Register" -> register();
+            case "Exit" -> exit();
+            default -> mainMenu();
+        }
 
     }
 
@@ -123,6 +141,7 @@ public class BootcampController {
     }
 
     private void logout() {
+        bootcampDAO.resetUser();
     }
 
     private void viewCourses() {

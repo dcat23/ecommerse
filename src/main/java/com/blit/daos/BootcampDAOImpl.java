@@ -43,9 +43,16 @@ public class BootcampDAOImpl implements BootcampDAO {
     }
 
     @Override
+    public void resetUser() {
+        this.user = new Guest();
+    }
+
+    @Override
     public User getUser() {
         return user;
     }
+
+
 
     @Override
     public List<Course> getCourses() {
