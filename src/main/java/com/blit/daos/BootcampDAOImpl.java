@@ -1,7 +1,9 @@
 package com.blit.daos;
 
 import com.blit.exceptions.EmailExistsException;
+import com.blit.exceptions.InvalidCredentialsException;
 import com.blit.exceptions.InvalidEmailFormatException;
+import com.blit.exceptions.UserNotFoundException;
 import com.blit.models.*;
 import com.blit.repositories.UserRepo;
 import com.blit.utils.Validation;
@@ -31,28 +33,38 @@ public class BootcampDAOImpl implements BootcampDAO {
             throw new InvalidEmailFormatException("Email " + newUser.email() + " should have format: NAME@HOST.COM");
         }
 
-
         User.Type type = User.Type.valueOf(newUser.userType());
 
-        if (type == null || type == User.Type.GUEST)
+        if (type == User.Type.GUEST)
         {
-            throw new Exception("Cannot register as " + type == null ? "none":type.name());
+            throw new Exception("Cannot register as " + type.name());
         }
 
         UserRepo.insert(newUser);
-
 
         return true;
     }
 
     @Override
-    public boolean authenticate(String email, String password)
-    {
-//        exceptions : UserNotFound, InvalidCredentials
+    public boolean authenticate(String email, String password) throws UserNotFoundException, InvalidCredentialsException {
 
-        System.out.println("encrypted password: " + password);
+        User user = UserRepo.byEmail(email);
+        if (!user.exists())
+        {
+            throw new UserNotFoundException("No user with email "+ email);
+        }
 
-        return false;
+        String encrypted = UserRepo.encode(password);
+        if (!encrypted.equals(user.getPassword()))
+        {
+            throw new InvalidCredentialsException("Incorrect password");
+        }
+
+        System.out.println("encrypted password: " + encrypted);
+
+        this.user = user;
+
+        return true;
     }
 
     @Override

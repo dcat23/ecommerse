@@ -25,6 +25,7 @@ public class UserRepo {
                 user.setId(result.getInt("id"));
                 user.setName(result.getString("name"));
                 user.setEmail(result.getString("email"));
+                user.setPassword(result.getString("password"));
                 return user;
             }
 
@@ -83,7 +84,7 @@ public class UserRepo {
         }
     }
 
-    protected static String encode(String passwordToHash) {
+    public static String encode(String passwordToHash) {
         return new String(Base64.getEncoder()
                 .encode(passwordToHash.getBytes()));
     }

@@ -1,5 +1,7 @@
 package com.blit.daos;
 
+import com.blit.exceptions.InvalidCredentialsException;
+import com.blit.exceptions.UserNotFoundException;
 import com.blit.models.Course;
 import com.blit.models.NewUser;
 import com.blit.models.User;
@@ -19,14 +21,16 @@ public interface BootcampDAO {
 
     /**
      * Checks if the credentials are valid
-     * then sets the current user
      *
      * @param email must be unique
      * @param password will be encrypted here
      * @return boolean
      */
-    boolean authenticate(String email, String password);
-
+    boolean authenticate(
+            String email,
+            String password
+    ) throws UserNotFoundException,
+            InvalidCredentialsException;
 
     /**
      * Sets the current user to Guest;

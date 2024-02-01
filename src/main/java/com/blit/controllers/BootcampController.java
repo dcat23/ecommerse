@@ -3,7 +3,9 @@ package com.blit.controllers;
 import com.blit.daos.BootcampDAO;
 import com.blit.daos.BootcampDAOImpl;
 import com.blit.exceptions.EmailExistsException;
+import com.blit.exceptions.InvalidCredentialsException;
 import com.blit.exceptions.InvalidEmailFormatException;
+import com.blit.exceptions.UserNotFoundException;
 import com.blit.models.*;
 import com.blit.utils.Prompt;
 
@@ -14,6 +16,10 @@ import static com.blit.models.User.Type.STUDENT;
 import static com.blit.models.User.Type.TEACHER;
 
 public class BootcampController {
+
+    private static final String EMAIL_PROMPT = "What is your email?";
+    private static final String PASSWORD_PROMPT = "What is your password?";
+    private static final String MENU_PROMPT = "What would you like to do?";
 
     private static Scanner scan = new Scanner(System.in);
     private final BootcampDAO bootcampDAO = new BootcampDAOImpl();
@@ -43,17 +49,17 @@ public class BootcampController {
     }
 
     private void mainMenu() {
-        final String MENU_TITLE = "What would you like to do?";
+
 
         Prompt menu = null;
         if (activeUser().exists())
         {
-            menu = new Prompt.builder(MENU_TITLE)
+            menu = new Prompt.builder(MENU_PROMPT)
                     .addOption("Logout")
                     .addOption("Exit")
                     .build();
         } else {
-            menu = new Prompt.builder(MENU_TITLE)
+            menu = new Prompt.builder(MENU_PROMPT)
                     .addOption("Login")
                     .addOption("Register")
                     .addOption("Exit")
@@ -77,17 +83,37 @@ public class BootcampController {
     }
 
     private void login() {
-        Prompt email = new Prompt.builder("What is your email?")
+        Prompt email = new Prompt.builder(EMAIL_PROMPT)
                 .lowerCase()
                 .build();
-        Prompt password = new Prompt.builder("What is your password?")
+        Prompt password = new Prompt.builder(PASSWORD_PROMPT)
                 .caseSensitive()
                 .build();
 
         email.prompt(scan);
         password.prompt(scan);
 
-        bootcampDAO.authenticate(email.getAnswer(), password.getAnswer());
+        int attempts = 3;
+        boolean authenticated;
+
+        while (attempts-- > 0)
+        {
+            try {
+                authenticated = bootcampDAO.authenticate(
+                        email.getAnswer(),
+                        password.getAnswer());
+
+                if (authenticated) break;
+
+            } catch (UserNotFoundException e) {
+                System.out.println(e.getMessage());
+                email.prompt(scan);
+            } catch (InvalidCredentialsException e) {
+                System.out.println(e.getMessage() + " [attempts: " + attempts + "]");
+                password.prompt(scan);
+            }
+
+        }
     }
 
     private void register() {
@@ -124,12 +150,11 @@ public class BootcampController {
             }
         }
 
-        System.out.println(email.getAnswer() + " registered as " + userType);
+        System.out.println(email.getAnswer() + " registered as " + userType.getAnswer());
 
     }
     private void studentMenu() {
-        Prompt menu = new Prompt.builder(
-                "What would you like to do?")
+        Prompt menu = new Prompt.builder(MENU_PROMPT)
                 .addOption("Enroll into a new course")
                 .addOption("View all courses")
                 .addOption("Logout")
@@ -149,10 +174,20 @@ public class BootcampController {
     }
 
     private void viewCourses() {
+        List<Course> courses = null;
+
+        if (activeUser() instanceof Teacher teacher)
+        {
+            courses = teacher.getCourses();
+        }
+        else if (activeUser() instanceof Student student)
+        {
+            courses = student.getCourses();
+
+        }
 
 
 
-        List<Course> courses = bootcampDAO.getCourses();
     }
 
     private void enroll() {
@@ -160,13 +195,25 @@ public class BootcampController {
     }
 
     private void teacherMenu() {
-//        todo: teacher menu
-//        create course, view courses,
-        Teacher teacher = (Teacher) activeUser();
+      Prompt menu = new Prompt.builder(
+                "What would you like to do?")
+                .addOption("Create a new course")
+                .addOption("View created courses")
+                .addOption("Logout")
+                .build();
+
+        menu.prompt(scan);
+        switch(menu.getSelection())
+        {
+            case 1 -> createCourse();
+            case 2 -> viewCourses();
+            case 3 -> logout();
+        }
 
     }
 
-
+    private void createCourse() {
+    }
 
 
 }

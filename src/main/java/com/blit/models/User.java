@@ -1,5 +1,10 @@
 package com.blit.models;
 
+import com.blit.repositories.UserRepo;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class User {
 
     public enum Type {TEACHER, STUDENT, GUEST}
@@ -7,6 +12,7 @@ public abstract class User {
     private int id;
     private String name;
     private String email;
+    private String password;
 
     public User() {
         this.type = Type.GUEST;
@@ -20,6 +26,11 @@ public abstract class User {
         this.type = type;
         this.name = name;
         this.email = email;
+    }
+
+    public List<Course> getCourses() {
+
+        return new ArrayList<>();
     }
 
     public Type getType() {
@@ -48,6 +59,14 @@ public abstract class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public boolean exists() { return type != Type.GUEST; }
