@@ -106,6 +106,10 @@ public class Prompt {
     }
 
 
+    /**
+     * Uses 1 index
+     * @return
+     */
     public int getSelection() {
         if (options.isEmpty())
         {

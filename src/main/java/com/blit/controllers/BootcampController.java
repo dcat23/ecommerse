@@ -9,6 +9,7 @@ import com.blit.exceptions.UserNotFoundException;
 import com.blit.models.*;
 import com.blit.utils.Prompt;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -106,7 +107,7 @@ public class BootcampController {
                 if (authenticated) break;
 
             } catch (UserNotFoundException e) {
-                System.out.println(e.getMessage());
+                System.out.println(e.getMessage() + " [attempts: " + attempts + "]");
                 email.prompt(scan);
             } catch (InvalidCredentialsException e) {
                 System.out.println(e.getMessage() + " [attempts: " + attempts + "]");
@@ -169,34 +170,8 @@ public class BootcampController {
         }
     }
 
-    private void logout() {
-        bootcampDAO.resetUser();
-    }
-
-    private void viewCourses() {
-        List<Course> courses = null;
-
-        if (activeUser() instanceof Teacher teacher)
-        {
-            courses = teacher.getCourses();
-        }
-        else if (activeUser() instanceof Student student)
-        {
-            courses = student.getCourses();
-
-        }
-
-
-
-    }
-
-    private void enroll() {
-
-    }
-
     private void teacherMenu() {
-      Prompt menu = new Prompt.builder(
-                "What would you like to do?")
+        Prompt menu = new Prompt.builder(MENU_PROMPT)
                 .addOption("Create a new course")
                 .addOption("View created courses")
                 .addOption("Logout")
@@ -212,7 +187,57 @@ public class BootcampController {
 
     }
 
+    private void logout() {
+        bootcampDAO.resetUser();
+    }
+
+    private void viewCourses() {
+        List<Course> courses = new ArrayList<>();
+
+        if (activeUser() instanceof Teacher teacher)
+        {
+            courses = teacher.getCourses();
+        }
+        else if (activeUser() instanceof Student student)
+        {
+            courses = student.getCourses();
+
+        }
+
+        if (courses.isEmpty())
+        {
+            System.out.println("No courses");
+            return;
+        }
+
+        Prompt.builder pb = new Prompt.builder("Courses");
+        for (Course c : courses) {
+            pb.addOption(c.getName());
+        }
+
+        Prompt course = pb.build();
+        System.out.println("courses: " + courses.size());
+        course.prompt(scan);
+
+        Course selected = courses.get(course.getSelection() - 1);
+        System.out.println(selected.getName());
+
+
+
+    }
+
+    private void enroll() {
+
+    }
+
     private void createCourse() {
+        Teacher teacher = (Teacher) activeUser();
+
+        Prompt name = new Prompt.builder("Course name").build();
+
+        name.prompt(scan);
+
+        teacher.addCourse(name.getAnswer());
     }
 
 

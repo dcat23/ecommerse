@@ -1,8 +1,7 @@
 package com.blit.models;
 
-import com.blit.repositories.UserRepo;
+import com.blit.repositories.CourseRepo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class User {
@@ -29,8 +28,7 @@ public abstract class User {
     }
 
     public List<Course> getCourses() {
-
-        return new ArrayList<>();
+        return CourseRepo.all();
     }
 
     public Type getType() {

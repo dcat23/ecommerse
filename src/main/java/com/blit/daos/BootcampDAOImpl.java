@@ -60,7 +60,6 @@ public class BootcampDAOImpl implements BootcampDAO {
             throw new InvalidCredentialsException("Incorrect password");
         }
 
-        System.out.println("encrypted password: " + encrypted);
 
         this.user = user;
 
