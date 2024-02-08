@@ -1,4 +1,4 @@
-package com.blit.repositories;
+package com.blit.daos;
 
 import com.blit.models.*;
 import com.blit.utils.ConnectionUtil;
@@ -6,12 +6,13 @@ import com.blit.utils.ConnectionUtil;
 import java.sql.*;
 import java.util.Base64;
 
-public class UserRepo {
+public class UserDao {
 
     public static User byEmail(String email) {
         try(Connection conn = ConnectionUtil.getConnection())
         {
             String sql = "SELECT * FROM users WHERE email = '" + email +"';";
+
             Statement statement = conn.createStatement();
             ResultSet result = statement.executeQuery(sql);
             if (result.next())
@@ -22,6 +23,7 @@ public class UserRepo {
                     case STUDENT -> new Student();
                     default -> new Guest();
                 };
+
                 user.setId(result.getInt("id"));
                 user.setName(result.getString("name"));
                 user.setEmail(result.getString("email"));

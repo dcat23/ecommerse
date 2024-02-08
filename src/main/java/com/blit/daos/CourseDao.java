@@ -1,4 +1,4 @@
-package com.blit.repositories;
+package com.blit.daos;
 
 import com.blit.models.*;
 import com.blit.utils.ConnectionUtil;
@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CourseRepo {
+public class CourseDao {
 
     public static List<Course> byTeacher(int teacherId) {
         List<Course> courses = new ArrayList<>();
@@ -117,4 +117,5 @@ public class CourseRepo {
             throw new RuntimeException(e);
         }
     }
+
 }

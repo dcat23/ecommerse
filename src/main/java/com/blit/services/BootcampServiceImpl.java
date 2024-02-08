@@ -1,32 +1,31 @@
-package com.blit.daos;
+package com.blit.services;
 
 import com.blit.exceptions.EmailExistsException;
 import com.blit.exceptions.InvalidCredentialsException;
 import com.blit.exceptions.InvalidEmailFormatException;
 import com.blit.exceptions.UserNotFoundException;
 import com.blit.models.*;
-import com.blit.repositories.UserRepo;
+import com.blit.daos.UserDao;
 import com.blit.utils.Validation;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BootcampDAOImpl implements BootcampDAO {
+public class BootcampServiceImpl implements BootcampService {
 
     private User user;
 
-    public BootcampDAOImpl() {
+    public BootcampServiceImpl() {
         this.user = new Guest();
     }
 
     @Override
     public boolean register(NewUser newUser) throws Exception {
 
-        if (UserRepo.byEmail(newUser.email()).exists())
+        if (UserDao.byEmail(newUser.email()).exists())
         {
             throw new EmailExistsException(newUser.email() + " already exists");
         }
-
 
         if (!Validation.checkEmail(newUser.email()))
         {
@@ -40,7 +39,7 @@ public class BootcampDAOImpl implements BootcampDAO {
             throw new Exception("Cannot register as " + type.name());
         }
 
-        UserRepo.insert(newUser);
+        UserDao.insert(newUser);
 
         return true;
     }
@@ -48,13 +47,14 @@ public class BootcampDAOImpl implements BootcampDAO {
     @Override
     public boolean authenticate(String email, String password) throws UserNotFoundException, InvalidCredentialsException {
 
-        User user = UserRepo.byEmail(email);
+        User user = UserDao.byEmail(email);
         if (!user.exists())
         {
             throw new UserNotFoundException("No user with email "+ email);
         }
 
-        String encrypted = UserRepo.encode(password);
+        String encrypted = UserDao.encode(password);
+        
         if (!encrypted.equals(user.getPassword()))
         {
             throw new InvalidCredentialsException("Incorrect password");

@@ -19,12 +19,11 @@ public class ConnectionUtil {
             }
 
             // update once connecting to live databasse
-//            String url = "demos-database.cdomywmkyglo.us-east-1.rds.amazonaws.com:3306";
-            final String url = databaseUrl;
+//            String databaseUrl = "demos-database.cdomywmkyglo.us-east-1.rds.amazonaws.com:3306";
             final String username = "admin";
             final String password = "password";
 
-            conn = DriverManager.getConnection(url, username, password);
+            conn = DriverManager.getConnection(databaseUrl, username, password);
         }
 
         return conn;

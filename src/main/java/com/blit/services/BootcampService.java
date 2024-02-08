@@ -1,4 +1,4 @@
-package com.blit.daos;
+package com.blit.services;
 
 import com.blit.exceptions.InvalidCredentialsException;
 import com.blit.exceptions.UserNotFoundException;
@@ -8,7 +8,7 @@ import com.blit.models.User;
 
 import java.util.List;
 
-public interface BootcampDAO {
+public interface BootcampService {
 
     User getUser();
     List<Course> getCourses();

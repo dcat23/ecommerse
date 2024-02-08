@@ -1,6 +1,6 @@
 package com.blit.models;
 
-import com.blit.repositories.CourseRepo;
+import com.blit.daos.CourseDao;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ public abstract class User {
     }
 
     public List<Course> getCourses() {
-        return CourseRepo.all();
+        return CourseDao.all();
     }
 
     public Type getType() {
