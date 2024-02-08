@@ -9,6 +9,11 @@ public class Course {
     public Course() {
     }
 
+    public static boolean validName(String courseName)
+    {
+        return true;
+    }
+
 
     public int getId() {
         return id;

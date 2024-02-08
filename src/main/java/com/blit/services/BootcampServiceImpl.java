@@ -41,6 +41,8 @@ public class BootcampServiceImpl implements BootcampService {
 
         UserDao.insert(newUser);
 
+        user = UserDao.byEmail(newUser.email());
+
         return true;
     }
 
@@ -54,7 +56,7 @@ public class BootcampServiceImpl implements BootcampService {
         }
 
         String encrypted = UserDao.encode(password);
-        
+
         if (!encrypted.equals(user.getPassword()))
         {
             throw new InvalidCredentialsException("Incorrect password");
