@@ -1,5 +1,6 @@
 package com.blit.daos;
 
+import com.blit.dto.CourseCreation;
 import com.blit.models.*;
 import com.blit.utils.ConnectionUtil;
 
@@ -31,22 +32,43 @@ public class CourseDao {
 
         return courses;
     }
-    public static List<Course> withStudent(int studentId) {
+
+    public static Course byName(String courseName) {
+//        List<Course> courses = new ArrayList<>();
+        try(Connection conn = ConnectionUtil.getConnection())
+        {
+            String sql = "SELECT * FROM courses WHERE course_name = '" + courseName +"';";
+            Statement statement = conn.createStatement();
+            ResultSet result = statement.executeQuery(sql);
+            if (result.next())
+            {
+                Course course = new Course();
+                course.setName(courseName);
+                course.setId(result.getInt("course_id"));
+                course.setTeacherId(result.getInt("teacher_id"));
+                return course;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
+    }
+
+    public static List<Course> withStudent(int courseId) {
         List<Course> courses = new ArrayList<>();
         try(Connection conn = ConnectionUtil.getConnection())
         {
-            String sql = "SELECT Students.student_id, Students.student_name, Courses.course_id, Courses.course_name" +
-                    " FROM Students JOIN Courses" +
-                    " ON Students.course_id = Course.course_id" +
-                    " WHERE Students.student_id = '" + studentId + "';";
+            String sql = "SELECT * FROM courses WHERE course_id = '" + courseId +"';";
 
             Statement statement = conn.createStatement();
             ResultSet result = statement.executeQuery(sql);
             if (result.next())
             {
                 Course course = new Course();
-                course.setId(result.getInt("id"));
-                course.setName(result.getString("name"));
+                course.setId(result.getInt("course_id"));
+                course.setName(result.getString("course_name"));
                 course.setTeacherId(result.getInt("teacher_id"));
                 courses.add(course);
             }
@@ -61,7 +83,7 @@ public class CourseDao {
         List<Course> courses = new ArrayList<>();
         try(Connection conn = ConnectionUtil.getConnection())
         {
-            String sql = "SELECT * FROM Courses;";
+            String sql = "SELECT * FROM courses;";
             Statement statement = conn.createStatement();
             ResultSet result = statement.executeQuery(sql);
             while(result.next())
@@ -80,7 +102,7 @@ public class CourseDao {
         return courses;
     }
 
-    public static void insert(NewCourse newCourse) {
+    public static void insert(CourseCreation courseCreation) {
         try(Connection conn = ConnectionUtil.getConnection())
         {
             String sql = "INSERT INTO courses (teacher_id,course_name)"
@@ -88,8 +110,8 @@ public class CourseDao {
             PreparedStatement statement = conn.prepareStatement(sql);
 
             int count = 0;
-            statement.setInt(++count, newCourse.teacherId());
-            statement.setString(++count, newCourse.name());
+            statement.setInt(++count, courseCreation.teacherId());
+            statement.setString(++count, courseCreation.name());
 
             statement.execute();
 

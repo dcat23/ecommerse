@@ -3,7 +3,7 @@ package com.blit.services;
 import com.blit.exceptions.InvalidCredentialsException;
 import com.blit.exceptions.UserNotFoundException;
 import com.blit.models.Course;
-import com.blit.models.NewUser;
+import com.blit.dto.UserRegistration;
 import com.blit.models.User;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public interface BootcampService {
     /**
      * Creates a new user
      */
-    boolean register(NewUser newUser) throws Exception;
+    boolean register(UserRegistration userRegistration) throws Exception;
 
     /**
      * Checks if the credentials are valid

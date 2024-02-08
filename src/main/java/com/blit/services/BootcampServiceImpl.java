@@ -1,5 +1,6 @@
 package com.blit.services;
 
+import com.blit.dto.UserRegistration;
 import com.blit.exceptions.EmailExistsException;
 import com.blit.exceptions.InvalidCredentialsException;
 import com.blit.exceptions.InvalidEmailFormatException;
@@ -20,7 +21,7 @@ public class BootcampServiceImpl implements BootcampService {
     }
 
     @Override
-    public boolean register(NewUser newUser) throws Exception {
+    public boolean register(UserRegistration newUser) throws Exception {
 
         if (UserDao.byEmail(newUser.email()).exists())
         {

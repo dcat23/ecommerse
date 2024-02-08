@@ -1,6 +1,7 @@
 package com.blit.models;
 
 import com.blit.daos.CourseDao;
+import com.blit.dto.CourseCreation;
 
 import java.util.List;
 
@@ -15,11 +16,20 @@ public class Teacher extends User {
     }
 
     public void addCourse(String name) {
-        CourseDao.insert(new NewCourse(name, getId()));
+        CourseDao.insert(new CourseCreation(name, getId()));
     }
 
     @Override
     public List<Course> getCourses() {
         return CourseDao.byTeacher(getId());
+    }
+
+    @Override
+    public String toString() {
+        return "Teacher{" +
+                "name='" + getName() + '\'' +
+                ", email='" + getEmail() + '\'' +
+                ", password='" + getPassword() + '\'' +
+                "}";
     }
 }

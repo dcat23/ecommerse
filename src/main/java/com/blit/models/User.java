@@ -3,6 +3,7 @@ package com.blit.models;
 import com.blit.daos.CourseDao;
 
 import java.util.List;
+import java.util.Objects;
 
 public abstract class User {
 
@@ -68,4 +69,28 @@ public abstract class User {
     }
 
     public boolean exists() { return type != Type.GUEST; }
+
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "type=" + type +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
+        return type == user.type && Objects.equals(name, user.name) && Objects.equals(email, user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, name, email);
+    }
 }

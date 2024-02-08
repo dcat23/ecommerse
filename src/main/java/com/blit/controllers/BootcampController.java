@@ -1,5 +1,7 @@
 package com.blit.controllers;
 
+import com.blit.daos.CourseDao;
+import com.blit.dto.UserRegistration;
 import com.blit.services.BootcampService;
 import com.blit.services.BootcampServiceImpl;
 import com.blit.exceptions.EmailExistsException;
@@ -143,7 +145,7 @@ public class BootcampController {
         while (attempt.available())
         {
             try {
-                bootcampService.register(new NewUser(
+                bootcampService.register(new UserRegistration(
                         userType.getAnswer(),
                         name.getAnswer(),
                         email.getAnswer(),
@@ -229,7 +231,19 @@ public class BootcampController {
     }
 
     private void enroll() {
+        Student student = (Student) activeUser();
 
+        Prompt.builder pb = new Prompt.builder("Choose a course");
+        List<Course> allCourses = CourseDao.all();
+        allCourses.forEach(c -> pb.addOption(c.getName()));
+
+        Prompt course = pb.build();
+
+        course.prompt(scan);
+
+        Course selected = allCourses.get(course.getSelection() - 1);
+        student.enroll(selected.getName());
+        System.out.println();
     }
 
     private void createCourse() {

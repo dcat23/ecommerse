@@ -1,5 +1,6 @@
 package com.blit.daos;
 
+import com.blit.dto.UserRegistration;
 import com.blit.models.*;
 import com.blit.utils.ConnectionUtil;
 
@@ -18,7 +19,8 @@ public class UserDao {
             if (result.next())
             {
                 User.Type type = User.Type.valueOf(result.getString("user_type"));
-                User user = switch(type) {
+
+                var user = switch(type) {
                     case TEACHER -> new Teacher();
                     case STUDENT -> new Student();
                     default -> new Guest();
@@ -31,11 +33,12 @@ public class UserDao {
                 return user;
             }
 
+            return new Guest();
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
-        return new Guest();
     }
 
     public static User all() {
@@ -65,7 +68,7 @@ public class UserDao {
         return new Guest();
     }
 
-    public static void insert(NewUser newUser) {
+    public static boolean insert(UserRegistration newUser) {
         try(Connection conn = ConnectionUtil.getConnection())
         {
             String sql = "INSERT INTO users (user_type,name,email,password)"
@@ -80,6 +83,7 @@ public class UserDao {
 
             statement.execute();
 
+            return true;
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -88,6 +92,6 @@ public class UserDao {
 
     public static String encode(String passwordToHash) {
         return new String(Base64.getEncoder()
-                .encode(passwordToHash.getBytes()));
+                .encode(passwordToHash.trim().getBytes()));
     }
 }
