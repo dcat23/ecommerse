@@ -2,7 +2,6 @@ package com.blit.models;
 
 import com.blit.daos.CourseDao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Student extends User {
