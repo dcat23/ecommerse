@@ -1,5 +1,6 @@
 package com.blit.services;
 
+import com.blit.daos.CourseDao;
 import com.blit.dto.UserRegistration;
 import com.blit.exceptions.EmailExistsException;
 import com.blit.exceptions.InvalidCredentialsException;
@@ -9,7 +10,6 @@ import com.blit.models.*;
 import com.blit.daos.UserDao;
 import com.blit.utils.Validation;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BootcampServiceImpl implements BootcampService {
@@ -82,21 +82,7 @@ public class BootcampServiceImpl implements BootcampService {
     @Override
     public List<Course> getCourses() {
 
-        List<Course> courses = new ArrayList<>();
-
-
-        return courses;
-    }
-
-    @Override
-    public List<Course> getEnrolledCourses() {
-
-        if (user instanceof Guest) return getCourses();
-
-        List<Course> courses = new ArrayList<>();
-
-
-
+        List<Course> courses = CourseDao.all();
         return courses;
     }
 

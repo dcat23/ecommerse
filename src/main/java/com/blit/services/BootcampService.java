@@ -12,7 +12,6 @@ public interface BootcampService {
 
     User getUser();
     List<Course> getCourses();
-    List<Course> getEnrolledCourses();
 
     /**
      * Creates a new user

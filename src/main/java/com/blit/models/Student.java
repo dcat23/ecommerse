@@ -27,14 +27,18 @@ public class Student extends User {
 
         if (course == null) return;
 
-        System.out.println("enroll " + course);
-        courseId = course.getId();
+        boolean enrolled = CourseDao.enroll(course, this);
+        if (enrolled)
+        {
+            courseId = course.getId();
+            System.out.println("enrolled into " + course.getName());
+        }
     }
 
     @Override
     public String toString() {
         return "Student{" +
-                "courseId=" + courseId +
+                "id=" + getId() +
                 ", name='" + getName() + '\'' +
                 ", email='" + getEmail() + '\'' +
                 ", password='" + getPassword() + '\'' +

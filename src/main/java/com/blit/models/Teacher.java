@@ -21,7 +21,7 @@ public class Teacher extends User {
 
     @Override
     public List<Course> getCourses() {
-        return CourseDao.byTeacher(getId());
+        return CourseDao.byTeacher(this);
     }
 
     @Override

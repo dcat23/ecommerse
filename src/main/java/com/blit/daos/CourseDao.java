@@ -10,11 +10,11 @@ import java.util.List;
 
 public class CourseDao {
 
-    public static List<Course> byTeacher(int teacherId) {
+    public static List<Course> byTeacher(Teacher teacher) {
         List<Course> courses = new ArrayList<>();
         try(Connection conn = ConnectionUtil.getConnection())
         {
-            String sql = "SELECT * FROM courses WHERE teacher_id = '" + teacherId +"';";
+            String sql = "SELECT * FROM courses WHERE teacher_id = '" + teacher.getId() + "';";
             Statement statement = conn.createStatement();
             ResultSet result = statement.executeQuery(sql);
             if (result.next())
@@ -22,7 +22,7 @@ public class CourseDao {
                 Course course = new Course();
                 course.setId(result.getInt("course_id"));
                 course.setName(result.getString("course_name"));
-                course.setTeacherId(teacherId);
+                course.setTeacherId(teacher.getId());
                 courses.add(course);
             }
 
@@ -34,7 +34,6 @@ public class CourseDao {
     }
 
     public static Course byName(String courseName) {
-//        List<Course> courses = new ArrayList<>();
         try(Connection conn = ConnectionUtil.getConnection())
         {
             String sql = "SELECT * FROM courses WHERE course_name = '" + courseName +"';";
@@ -102,7 +101,7 @@ public class CourseDao {
         return courses;
     }
 
-    public static void insert(CourseCreation courseCreation) {
+    public static boolean insert(CourseCreation courseCreation) {
         try(Connection conn = ConnectionUtil.getConnection())
         {
             String sql = "INSERT INTO courses (teacher_id,course_name)"
@@ -115,27 +114,32 @@ public class CourseDao {
 
             statement.execute();
 
+            return true;
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void enroll(int courseId, Student student) {
+    public static boolean enroll(Course course, Student student) {
         try(Connection conn = ConnectionUtil.getConnection())
         {
-            String sql = "INSERT INTO Students (student_id, student_name, course_id)" +
-                    " VALUES (?,?,?);";
+            String sql = "INSERT INTO enrollments (user_id, course_id)" +
+                    " VALUES (?,?);";
             PreparedStatement statement = conn.prepareStatement(sql);
 
             int count = 0;
             statement.setInt(++count, student.getId());
-            statement.setString(++count, student.getName());
-            statement.setInt(++count, courseId);
+            statement.setInt(++count, course.getId());
 
             statement.execute();
 
-        } catch (SQLException e) {
+            return true;
+
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("Already enrolled in " + course.getName());
+            return false;
+        }catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
