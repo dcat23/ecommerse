@@ -71,31 +71,34 @@ public class Prompt {
         try {
             answer = validate(scan.nextLine());
         } catch (InvalidSelectionException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
+            prompt(scan);
+        } catch (NumberFormatException e) {
+            System.out.println(e.getMessage() + " must be a number.");
+            prompt(scan);
         }
-
-
-
     }
 
     private String validate(String answer) throws InvalidSelectionException {
-        if (!options.isEmpty()) {
-            int index = Integer.parseInt(answer) - 1;
-            if (index >= options.size() || index < 0)
-            {
-                throw new InvalidSelectionException("Selected option " + answer +
-                        " must be between 1 and " + options.size());
-            }
-            System.out.println(options.get(index));
+        if (options.isEmpty()) return answer;
+
+        int index = Integer.parseInt(answer) - 1;
+        if (index >= 0 && index < options.size())
+        {
+
+            System.out.println("[" + options.get(index) + "]\n");
             return options.get(index);
         }
-
-        return answer;
+        else
+        {
+            throw new InvalidSelectionException(">> Selected option " + answer +
+                    " must be between 1 and " + options.size());
+        }
     }
 
     public String getAnswer() {
         if (answer == null) {
-            throw new RuntimeException("answer not provided");
+            throw new RuntimeException("Answer not provided");
         }
 
         return switch (casing) {
@@ -107,15 +110,19 @@ public class Prompt {
 
 
     /**
-     * Uses 1 index
-     * @return
+     * Starts from index 1
      */
     public int getSelection() {
         if (options.isEmpty())
         {
-            return Integer.parseInt(answer);
+            return 0;
         }
 
-        return options.indexOf(answer);
+        return options.indexOf(answer) + 1;
+
+    }
+
+    public static void show(String toDisplay) {
+        System.out.println(toDisplay);
     }
 }

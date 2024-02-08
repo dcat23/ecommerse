@@ -1,7 +1,7 @@
 package com.blit.controllers;
 
-import com.blit.daos.BootcampDAO;
-import com.blit.daos.BootcampDAOImpl;
+import com.blit.services.BootcampService;
+import com.blit.services.BootcampServiceImpl;
 import com.blit.exceptions.EmailExistsException;
 import com.blit.exceptions.InvalidCredentialsException;
 import com.blit.exceptions.InvalidEmailFormatException;
@@ -23,7 +23,7 @@ public class BootcampController {
     private static final String MENU_PROMPT = "What would you like to do?";
 
     private static Scanner scan = new Scanner(System.in);
-    private final BootcampDAO bootcampDAO = new BootcampDAOImpl();
+    private final BootcampService bootcampService = new BootcampServiceImpl();
 
     private static boolean RUNNING = false;
 
@@ -51,16 +51,15 @@ public class BootcampController {
 
     private void mainMenu() {
 
-
         Prompt menu = null;
         if (activeUser().exists())
         {
-            menu = new Prompt.builder(MENU_PROMPT)
+            menu = new Prompt.builder(greet())
                     .addOption("Logout")
                     .addOption("Exit")
                     .build();
         } else {
-            menu = new Prompt.builder(MENU_PROMPT)
+            menu = new Prompt.builder(greet())
                     .addOption("Login")
                     .addOption("Register")
                     .addOption("Exit")
@@ -80,7 +79,7 @@ public class BootcampController {
     }
 
     private User activeUser() {
-        return bootcampDAO.getUser();
+        return bootcampService.getUser();
     }
 
     private void login() {
@@ -94,29 +93,35 @@ public class BootcampController {
         email.prompt(scan);
         password.prompt(scan);
 
-        int attempts = 3;
-        boolean authenticated;
+        Attempt attempt = new Attempt(3);
 
-        while (attempts-- > 0)
+        while (attempt.available())
         {
             try {
-                authenticated = bootcampDAO.authenticate(
+                bootcampService.authenticate(
                         email.getAnswer(),
                         password.getAnswer());
-
-                if (authenticated) break;
+                attempt.success();
 
             } catch (UserNotFoundException e) {
-                System.out.println(e.getMessage() + " [attempts: " + attempts + "]");
+                attempt.error(e);
+                Prompt tryAgain = new Prompt.builder(MENU_PROMPT)
+                        .addOption("Try again")
+                        .addOption("Return to main menu")
+                        .build();
+
+                tryAgain.prompt(scan);
+                if (tryAgain.getSelection() == 2) return;
                 email.prompt(scan);
+
             } catch (InvalidCredentialsException e) {
-                System.out.println(e.getMessage() + " [attempts: " + attempts + "]");
+                attempt.error(e);
+                attempt.decrement();
                 password.prompt(scan);
             }
 
         }
     }
-
     private void register() {
         Prompt userType = new Prompt.builder("Which type of user are you?")
                 .addOption(TEACHER.toString())
@@ -133,17 +138,19 @@ public class BootcampController {
         email.prompt(scan);
         password.prompt(scan);
 
-        boolean authenticated = false;
-        while (!authenticated)
+        Attempt attempt = new Attempt(3);
+
+        while (attempt.available())
         {
             try {
-                authenticated = bootcampDAO.register(new NewUser(
+                bootcampService.register(new NewUser(
                         userType.getAnswer(),
                         name.getAnswer(),
                         email.getAnswer(),
                         password.getAnswer()));
+                attempt.success();
             } catch (EmailExistsException | InvalidEmailFormatException e) {
-                System.out.println(e.getMessage());
+                attempt.error(e);
                 email.prompt(scan);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -155,7 +162,7 @@ public class BootcampController {
 
     }
     private void studentMenu() {
-        Prompt menu = new Prompt.builder(MENU_PROMPT)
+        Prompt menu = new Prompt.builder(greet())
                 .addOption("Enroll into a new course")
                 .addOption("View all courses")
                 .addOption("Logout")
@@ -169,9 +176,8 @@ public class BootcampController {
             case 3 -> logout();
         }
     }
-
     private void teacherMenu() {
-        Prompt menu = new Prompt.builder(MENU_PROMPT)
+        Prompt menu = new Prompt.builder(greet())
                 .addOption("Create a new course")
                 .addOption("View created courses")
                 .addOption("Logout")
@@ -184,11 +190,9 @@ public class BootcampController {
             case 2 -> viewCourses();
             case 3 -> logout();
         }
-
     }
-
     private void logout() {
-        bootcampDAO.resetUser();
+        bootcampService.resetUser();
     }
 
     private void viewCourses() {
@@ -201,29 +205,24 @@ public class BootcampController {
         else if (activeUser() instanceof Student student)
         {
             courses = student.getCourses();
-
         }
 
         if (courses.isEmpty())
         {
-            System.out.println("No courses");
+            System.out.println("No courses to show");
             return;
         }
 
-        Prompt.builder pb = new Prompt.builder("Courses");
+        Prompt.builder pb = new Prompt.builder("All Courses");
         for (Course c : courses) {
             pb.addOption(c.getName());
         }
 
         Prompt course = pb.build();
-        System.out.println("courses: " + courses.size());
         course.prompt(scan);
 
         Course selected = courses.get(course.getSelection() - 1);
         System.out.println(selected.getName());
-
-
-
     }
 
     private void enroll() {
@@ -233,12 +232,61 @@ public class BootcampController {
     private void createCourse() {
         Teacher teacher = (Teacher) activeUser();
 
-        Prompt name = new Prompt.builder("Course name").build();
+        Prompt name = new Prompt.builder("Give the course a name").build();
 
         name.prompt(scan);
 
+        Attempt attempt = new Attempt(10);
+
+        while (attempt.available())
+        {
+            if (Course.validName(name.getAnswer()))
+            {
+                break;
+            }
+            name.prompt(scan);
+        }
         teacher.addCourse(name.getAnswer());
+        System.out.println("Added " + name.getAnswer() +
+                "by "  + teacher.getName());
     }
 
+    private String greet() {
+        String name = activeUser().getName();
 
+        return "\nHello, " + name + "!\n" + MENU_PROMPT;
+
+    }
+
+    static class Attempt {
+        private int count;
+
+        Attempt() {
+            this.count = 5;
+        }
+
+        Attempt(int count) {
+            this.count = count;
+        }
+
+        boolean available() {
+            return count > 0;
+        }
+
+        public int decrement() {
+            if (available())
+            {
+                --count;
+            }
+            return count;
+        }
+
+        public void error(Exception e) {
+            System.out.println(e.getMessage() + " [attempts: " + count + "]\n");
+        }
+
+        public void success() {
+            count = 0;
+        }
+    }
 }
