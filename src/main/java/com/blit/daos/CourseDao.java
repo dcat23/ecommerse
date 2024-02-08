@@ -13,7 +13,7 @@ public class CourseDao {
         List<Course> courses = new ArrayList<>();
         try(Connection conn = ConnectionUtil.getConnection())
         {
-            String sql = "SELECT * FROM Courses WHERE teacher_id = '" + teacherId +"';";
+            String sql = "SELECT * FROM courses WHERE teacher_id = '" + teacherId +"';";
             Statement statement = conn.createStatement();
             ResultSet result = statement.executeQuery(sql);
             if (result.next())
@@ -83,7 +83,7 @@ public class CourseDao {
     public static void insert(NewCourse newCourse) {
         try(Connection conn = ConnectionUtil.getConnection())
         {
-            String sql = "INSERT INTO Courses (teacher_id,course_name)"
+            String sql = "INSERT INTO courses (teacher_id,course_name)"
                     + " VALUES (?,?);";
             PreparedStatement statement = conn.prepareStatement(sql);
 

@@ -24,7 +24,7 @@ public class UserDao {
                     default -> new Guest();
                 };
 
-                user.setId(result.getInt("id"));
+                user.setId(result.getInt("user_id"));
                 user.setName(result.getString("name"));
                 user.setEmail(result.getString("email"));
                 user.setPassword(result.getString("password"));

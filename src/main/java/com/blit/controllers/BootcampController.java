@@ -51,7 +51,7 @@ public class BootcampController {
 
     private void mainMenu() {
 
-        Prompt menu = null;
+        Prompt menu;
         if (activeUser().exists())
         {
             menu = new Prompt.builder(greet())
@@ -138,7 +138,7 @@ public class BootcampController {
         email.prompt(scan);
         password.prompt(scan);
 
-        Attempt attempt = new Attempt(3);
+        Attempt attempt = new Attempt(5);
 
         while (attempt.available())
         {
@@ -218,8 +218,11 @@ public class BootcampController {
             pb.addOption(c.getName());
         }
 
+        pb.addOption("Main menu");
         Prompt course = pb.build();
         course.prompt(scan);
+
+        if (course.getAnswer().equals("Main menu")) return;
 
         Course selected = courses.get(course.getSelection() - 1);
         System.out.println(selected.getName());
@@ -248,7 +251,7 @@ public class BootcampController {
         }
         teacher.addCourse(name.getAnswer());
         System.out.println("Added " + name.getAnswer() +
-                "by "  + teacher.getName());
+                " by "  + teacher.getName());
     }
 
     private String greet() {
