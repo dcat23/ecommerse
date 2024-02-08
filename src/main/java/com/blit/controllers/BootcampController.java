@@ -239,6 +239,12 @@ public class BootcampController {
 
         Prompt.builder pb = new Prompt.builder("Choose a course");
         List<Course> allCourses = CourseDao.all();
+
+        if (allCourses.isEmpty())
+        {
+            log.info("No available courses");
+            return;
+        }
         allCourses.forEach(c -> pb.addOption(c.getName()));
 
         Prompt course = pb.build();
@@ -246,6 +252,7 @@ public class BootcampController {
         course.prompt(scan);
 
         Course selected = allCourses.get(course.getSelection() - 1);
+        log.debug(selected.toString());
         student.enroll(selected.getName());
         log.info("Selected: {}", selected.getName());
     }
