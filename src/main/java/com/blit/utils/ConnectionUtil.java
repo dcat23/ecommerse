@@ -30,7 +30,8 @@ public class ConnectionUtil {
     }
 
     public static Connection getConnection() throws SQLException {
-        final String DATABASE_URL = "jdbc:mysql://localhost:3308/bootcamp";
+//        final String DATABASE_URL = "jdbc:mysql://localhost:3308/bootcamp";
+        final String DATABASE_URL = "jdbc:mysql://demos-database.cdomywmkyglo.us-east-1.rds.amazonaws.com:3306/bootcamp";
         return getConnection(DATABASE_URL);
     }
 }
