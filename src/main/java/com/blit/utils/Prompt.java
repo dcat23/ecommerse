@@ -1,12 +1,17 @@
 package com.blit.utils;
 
 import com.blit.exceptions.InvalidSelectionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Prompt {
+
+    private final Logger log = LoggerFactory.getLogger(Prompt.class);
 
     private final String title;
     private final List<String> options;
@@ -60,21 +65,21 @@ public class Prompt {
     }
 
     public void prompt(Scanner scan) {
-        System.out.println(title);
+        log.info(title);
 
         for (int i=0; i<options.size(); i++) {
             String opt = options.get(i);
-            System.out.println("[" + (i + 1) + "] " + opt);
+            log.info("[{}] {}", (i + 1), opt);
         }
 
 
         try {
             answer = validate(scan.nextLine());
         } catch (InvalidSelectionException e) {
-            System.out.println(e.getMessage());
+            log.error(e.getMessage());
             prompt(scan);
         } catch (NumberFormatException e) {
-            System.out.println(e.getMessage() + " must be a number.");
+            log.error("{} must be a number", e.getMessage());
             prompt(scan);
         }
     }
@@ -85,13 +90,12 @@ public class Prompt {
         int index = Integer.parseInt(answer) - 1;
         if (index >= 0 && index < options.size())
         {
-
-            System.out.println("[" + options.get(index) + "]\n");
+            log.info("[{}]", options.get(index));
             return options.get(index);
         }
         else
         {
-            throw new InvalidSelectionException(">> Selected option " + answer +
+            throw new InvalidSelectionException("Selected option " + answer +
                     " must be between 1 and " + options.size());
         }
     }

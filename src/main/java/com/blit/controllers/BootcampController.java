@@ -10,6 +10,8 @@ import com.blit.exceptions.InvalidEmailFormatException;
 import com.blit.exceptions.UserNotFoundException;
 import com.blit.models.*;
 import com.blit.utils.Prompt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,8 @@ import static com.blit.models.User.Type.STUDENT;
 import static com.blit.models.User.Type.TEACHER;
 
 public class BootcampController {
+
+    private static final Logger log = LoggerFactory.getLogger(Prompt.class);
 
     private static final String EMAIL_PROMPT = "What is your email?";
     private static final String PASSWORD_PROMPT = "What is your password?";
@@ -211,7 +215,7 @@ public class BootcampController {
 
         if (courses.isEmpty())
         {
-            System.out.println("No courses to show");
+            log.info("No courses to show");
             return;
         }
 
@@ -227,7 +231,7 @@ public class BootcampController {
         if (course.getAnswer().equals("Main menu")) return;
 
         Course selected = courses.get(course.getSelection() - 1);
-        System.out.println(selected.getName());
+        log.info("Selected: {}", selected.getName());
     }
 
     private void enroll() {
@@ -243,7 +247,7 @@ public class BootcampController {
 
         Course selected = allCourses.get(course.getSelection() - 1);
         student.enroll(selected.getName());
-        System.out.println();
+        log.info("Selected: {}", selected.getName());
     }
 
     private void createCourse() {
@@ -263,15 +267,15 @@ public class BootcampController {
             }
             name.prompt(scan);
         }
+
         teacher.addCourse(name.getAnswer());
-        System.out.println("Added " + name.getAnswer() +
-                " by "  + teacher.getName());
+        log.info("Added '{}' by {}", name.getAnswer(), teacher.getName());
     }
 
     private String greet() {
         String name = activeUser().getName();
 
-        return "\nHello, " + name + "!\n" + MENU_PROMPT;
+        return "Hello, " + name + "! " + MENU_PROMPT;
 
     }
 
